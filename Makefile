@@ -12,3 +12,6 @@ publish:
 
 package-install:
 	python -m pip install --user dist/*.whl
+
+check:
+	pytest
