@@ -15,3 +15,6 @@ package-install:
 
 check:
 	poetry run pytest
+
+test-coverage:
+	poetry run pytest --cov tests/
