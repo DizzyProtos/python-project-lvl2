@@ -56,9 +56,8 @@ def get_diff_message(first_dict, second_dict):
         first_value = first_dict.get(key, None)
         second_value = second_dict.get(key, None)
         diff_lines += get_diff_lines(key, first_value, second_value)
-    diff_message = '\n'.join(['\t{0}'.format(line) for line in diff_lines])
-    diff_message = '{{ \n {0} \n}}'.format(diff_message)
-    return diff_message
+    diff_formated = '\n'.join(['\t{0}'.format(line) for line in diff_lines])
+    return '{{ \n {0} \n}}'.format(diff_formated)
 
 
 def generate_diff(file_path1, file_path2):
