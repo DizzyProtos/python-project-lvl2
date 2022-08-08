@@ -1,6 +1,8 @@
 """This module does blah blah."""
 import argparse
 import json
+# from gendiff.scripts.file_reader import read_file
+from file_reader import read_file
 
 DESCRIPTION = 'Compares two configuration files and shows a difference.'
 
@@ -18,7 +20,28 @@ def get_alphabetical_keys(first_dict, second_dict):
     return sorted(set(list(first_dict) + list(second_dict)))
 
 
-def get_diff_lines(key, first_value, second_value):
+def dict_to_lines(initial_key, input_dict, symb=''):
+    lines = ['{0} {1}: {{'.format(symb, initial_key)]
+    for key in input_dict:
+        if isinstance(input_dict[key], dict):
+            lines.append(dict_to_lines(key, input_dict[key], ''))
+        else:
+            lines.append(['{0}: {1}'.format(key, input_dict[key])])
+    lines.append('}')
+    return lines
+
+
+def get_sub_add_line(key, value, symb='+'):
+    if key == 'group3':
+        print(1)
+    
+    if isinstance(value, dict):
+        return dict_to_lines(key, value, symb)
+    
+    return ['{0} {1}: {2}'.format(symb, key, value)]
+
+
+def find_difference_at_key(key, first_dict, second_dict):
     """Summary.
 
     Args:
@@ -29,20 +52,25 @@ def get_diff_lines(key, first_value, second_value):
     Returns:
         _type_: _description_
     """
-    if first_value is None:  # added
-        return ['+{0}: {1}'.format(key, second_value)]
-    elif second_value is None:  # removed
-        return ['-{0}: {1}'.format(key, first_value)]
+    first_value = first_dict.get(key, None)
+    second_value = second_dict.get(key, None)
+    if isinstance(first_value, dict) and isinstance(second_value, dict):
+        return []
+    if key not in first_dict:  # added
+        return get_sub_add_line(key, second_value, '+')
+    elif key not in second_dict:  # removed
+        return get_sub_add_line(key, first_value, '-')
     elif first_value == second_value:  # equal
-        return ['{0}: {1}'.format(key, first_value)]
+        return get_sub_add_line(key, first_value, '')
     elif first_value != second_value:  # changed
-        lines = ['-{0}: {1}'.format(key, first_value)]
-        lines.append('+{0}: {1}'.format(key, second_value))
+        lines = get_sub_add_line(key, first_value, '-')
+        lines += get_sub_add_line(key, second_value, '+')
         return lines
 
 
-def get_diff_message(first_dict, second_dict):
+def get_diff_lines(first_dict, second_dict):
     """Return difference between first and second dicts on key.
+       nested lists are equal to nested dicts in the 1st file
 
     Args:
         first_dict (dict): original dictionary
@@ -55,9 +83,25 @@ def get_diff_message(first_dict, second_dict):
     for key in get_alphabetical_keys(first_dict, second_dict):
         first_value = first_dict.get(key, None)
         second_value = second_dict.get(key, None)
-        diff_lines += get_diff_lines(key, first_value, second_value)
-    diff_formated = '\n'.join(['\t{0}'.format(line) for line in diff_lines])
-    return '{{ \n {0} \n}}'.format(diff_formated)
+        if isinstance(first_value, dict) and isinstance(second_value, dict):
+            diff_lines.append('{0}: {{'.format(key))
+            diff_lines.append(get_diff_lines(first_value, second_value))
+            diff_lines.append('}')
+
+        diff_lines += find_difference_at_key(key, first_dict, second_dict)
+    return diff_lines
+
+
+def format_diff_message(diff_lines, nest_level=1):
+    diff_message = ''
+    for line in diff_lines:
+        if isinstance(line, list):
+            diff_message += format_diff_message(line, nest_level+1)
+        else:
+            diff_message += '{0}{1}\n'.format('\t'*nest_level, line)
+    if nest_level == 1:
+        diff_message = '{{\n{0}}}'.format(diff_message)
+    return diff_message
 
 
 def generate_diff(file_path1, file_path2):
@@ -70,12 +114,14 @@ def generate_diff(file_path1, file_path2):
     Returns:
         _type_: _description_
     """
-    with open(file_path1, 'r') as f1:
-        first_dict = json.load(f1)
-    with open(file_path2, 'r') as f2:
-        second_dict = json.load(f2)
+    first_dict = read_file(file_path1)
+    second_dict = read_file(file_path2)
 
-    return get_diff_message(first_dict, second_dict)
+    diff_lines = get_diff_lines(first_dict, second_dict)
+    diff_message = format_diff_message(diff_lines)
+    print(diff_message)
+
+    return diff_message
 
 
 def main(*args, **kwargs):
