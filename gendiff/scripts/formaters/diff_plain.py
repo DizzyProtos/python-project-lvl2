@@ -18,6 +18,7 @@ def _format_value(line_value):
         return (_format_value(fv), _format_value(sv))
     if isinstance(line_value, dict):
         return complex_value_str
+    return line_value
 
 
 def get_plain_line(line_tuple, parent_keys=None):
