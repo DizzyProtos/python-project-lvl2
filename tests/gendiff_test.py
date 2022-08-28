@@ -1,5 +1,5 @@
 import os
-from gendiff.scripts.gendiff import generate_diff
+from gendiff import generate_diff
 
 
 def run_test(test_file1, test_file2, correct_file, format='json'):

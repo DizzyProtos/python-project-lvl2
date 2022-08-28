@@ -1,6 +1,6 @@
 """Functions for creating diff message in  different formats."""
-from gendiff.scripts.formaters.diff_json import format_json
-from gendiff.scripts.formaters.diff_plain import format_plain
+from gendiff.formaters.diff_json import format_json
+from gendiff.formaters.diff_plain import format_plain
 
 
 def format_diff_message(diff_lines, format_name):
