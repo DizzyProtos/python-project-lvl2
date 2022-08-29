@@ -26,7 +26,7 @@ def main(*args, **kwargs):
 
     args = parser.parse_args()
 
-    return generate_diff(args.first_file, args.second_file, 'json')
+    return generate_diff(args.first_file, args.second_file, args.format)
 
 
 if __name__ == '__main__':

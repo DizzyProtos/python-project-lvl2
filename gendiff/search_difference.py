@@ -55,8 +55,6 @@ def get_diff_lines(first_dict, second_dict):
     for key in get_alphabetical_keys(first_dict, second_dict):
         first_value = first_dict.get(key, None)
         second_value = second_dict.get(key, None)
-        if key == 'group4':
-            print(1)
         if isinstance(first_value, dict) and isinstance(second_value, dict):
             diff_lines.append(key)
             diff_lines.append(get_diff_lines(first_value, second_value))
