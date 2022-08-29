@@ -43,6 +43,4 @@ def format_json(diff_lines):
     diff_dict = _get_json_diff_dict(diff_lines)
     diff_dict.pop('key', None)
     diff_message = json.dumps(diff_dict, indent=2)
-    with open('temp_diff', 'w') as f:
-        f.write(diff_message)
     return diff_message
