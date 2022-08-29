@@ -1,10 +1,27 @@
-"""Create json difference message."""
+"""Create human readable difference message."""
+
 
 def _get_indent(level):
+    """Return string for indent of this nesting level.
+
+    Args:
+        level (int): level of nesting
+
+    Returns:
+        str: intent in front of nested line
+    """
     return ' ' * (level * 4 - 2)
 
 
 def _format_pretty_diff_value(json_diff_value):
+    """Format value in line.
+
+    Args:
+        json_diff_value (any): value to format
+
+    Returns:
+        str: formated value
+    """
     if isinstance(json_diff_value, bool):
         return 'true' if json_diff_value else 'false'
     if json_diff_value is None:
@@ -22,7 +39,7 @@ def _dict_to_pretty_lines(initial_key, input_dict, symb='', nest_level=1):
         nest_level (str, optional): current level of nesting
 
     Returns:
-        list: lines for a difference message
+        List[str]: lines for a difference message
     """
     lines = [f'{_get_indent(nest_level)}{symb} {initial_key}: {{']
     for key, key_item in input_dict.items():
@@ -37,7 +54,7 @@ def _dict_to_pretty_lines(initial_key, input_dict, symb='', nest_level=1):
 
 
 def _format_diff_pretty_line(symb, key, line_val, nest_level):
-    """Format line of json message.
+    """Format line of the difference message.
 
     Args:
         symb (str): + or - symbol for this line
@@ -46,7 +63,7 @@ def _format_diff_pretty_line(symb, key, line_val, nest_level):
         nest_level (int): level of nesting for this line
 
     Returns:
-        str: line of json message
+        List[str]: lines of json message
     """
     if not symb:
         symb = ' '
@@ -58,14 +75,14 @@ def _format_diff_pretty_line(symb, key, line_val, nest_level):
 
 
 def _get_pretty_line(line_tuple, nest_level=1):
-    """Get json message line from difference line.
+    """Get the diffenrence message line from an internal line.
 
     Args:
         line_tuple (tuple): difference line (symbol, key, value)
         nest_level (int, optional): how many nested dicts are parents.
 
     Returns:
-        str: line of json message
+        List[str]: line of json message
     """
     symb, key, line_value = line_tuple
     if symb == 'u':
@@ -83,14 +100,14 @@ def _get_pretty_line(line_tuple, nest_level=1):
 
 
 def format_pretty(diff_lines, nest_level=1):
-    """Create json difference message from lines.
+    """Create the difference message from lines.
 
     Args:
         diff_lines (list): lines describing differences between two files
         nest_level (int, optional): how many dicts are parents to the current.
 
     Returns:
-        str: json difference message
+        str: human readable difference message
     """
     indent = _get_indent(nest_level)
     diff_message = []
@@ -109,8 +126,4 @@ def format_pretty(diff_lines, nest_level=1):
     diff_message = ''.join(diff_message)
     if nest_level == 1:
         diff_message = f'{{\n{diff_message}}}'
-        # print(diff_message)
-        # with open('temp_diff.txt', 'w') as f:
-        #     f.write(diff_message)
-        # print(1)
     return diff_message

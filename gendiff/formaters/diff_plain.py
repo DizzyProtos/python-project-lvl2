@@ -1,5 +1,6 @@
 """Format differences into a plain message."""
 
+
 def _format_value(line_value):
     """Format value of a line in plain message.
 
