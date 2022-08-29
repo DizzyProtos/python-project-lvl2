@@ -26,8 +26,8 @@ def main(*args, **kwargs):
 
     args = parser.parse_args()
 
-    return generate_diff(args.first_file, args.second_file, 'plain')
+    return generate_diff(args.first_file, args.second_file, 'json')
 
 
 if __name__ == '__main__':
-    main('tests/fixtures/1.json', 'tests/fixtures/2.json')
+    main('tests/fixtures/1.json', 'tests/fixtures/2.json', format='json')

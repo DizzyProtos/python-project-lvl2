@@ -1,5 +1,16 @@
 """Create json difference message."""
 
+def _get_indent(level):
+    return ' ' * (level * 4 - 2)
+
+
+def _format_json_diff_value(json_diff_value):
+    if isinstance(json_diff_value, bool):
+        return 'true' if json_diff_value else 'false'
+    if json_diff_value is None:
+        return 'null'
+    return str(json_diff_value)
+
 
 def _dict_to_json_lines(initial_key, input_dict, symb='', nest_level=1):
     """Convert dictionary into lines for diffence message.
@@ -13,16 +24,15 @@ def _dict_to_json_lines(initial_key, input_dict, symb='', nest_level=1):
     Returns:
         list: lines for a difference message
     """
-    if symb:
-        symb = f'{symb} '
-    lines = ['{0}{1}{2}: {{'.format('\t' * nest_level, symb, initial_key)]
+    lines = [f'{_get_indent(nest_level)}{symb} {initial_key}: {{']
     for key, key_item in input_dict.items():
         if isinstance(input_dict[key], dict):
-            lines += _dict_to_json_lines(key, key_item, '', nest_level + 1)
+            lines += _dict_to_json_lines(key, key_item, ' ', nest_level + 1)
         else:
-            nested_tabs = '\t' * (nest_level + 1)
-            lines.append('{0}{1}: {2}'.format(nested_tabs, key, key_item))
-    lines.append('{0}}}'.format('\t' * nest_level))
+            key_item = _format_json_diff_value(key_item)
+            indent = _get_indent(nest_level + 1)
+            lines.append('{0}  {1}: {2}'.format(indent, key, key_item))
+    lines.append(f'{_get_indent(nest_level)}  }}')
     return lines
 
 
@@ -38,12 +48,13 @@ def _format_diff_json_line(symb, key, line_val, nest_level):
     Returns:
         str: line of json message
     """
+    if not symb:
+        symb = ' '
     if isinstance(line_val, dict):
         return _dict_to_json_lines(key, line_val, symb, nest_level)
-    nested_tabs = '\t' * nest_level
-    if symb == '':
-        return ['{0}{1}: {2}'.format(nested_tabs, key, line_val)]
-    return ['{0}{1} {2}: {3}'.format(nested_tabs, symb, key, line_val)]
+    indent = _get_indent(nest_level)
+    line_val = _format_json_diff_value(line_val)
+    return [f'{indent}{symb} {key}: {line_val}']
 
 
 def _get_json_line(line_tuple, nest_level=1):
@@ -81,15 +92,15 @@ def format_json(diff_lines, nest_level=1):
     Returns:
         str: json difference message
     """
-    nested_tabs = '\t' * nest_level
+    indent = _get_indent(nest_level)
     diff_message = []
     line_ind = 0
     while line_ind < len(diff_lines):
         if isinstance(diff_lines[line_ind], str):
-            diff_message.append(f'{nested_tabs}{diff_lines[line_ind]}: {{\n')
+            diff_message.append(f'{indent}  {diff_lines[line_ind]}: {{\n')
             n_value = diff_lines[line_ind + 1]
             diff_message.append(format_json(n_value, nest_level + 1))
-            diff_message.append(f'{nested_tabs}}}\n')
+            diff_message.append(f'{indent}  }}\n')
             line_ind += 2
         elif isinstance(diff_lines[line_ind], tuple):
             formated_lines = _get_json_line(diff_lines[line_ind], nest_level)
@@ -98,4 +109,8 @@ def format_json(diff_lines, nest_level=1):
     diff_message = ''.join(diff_message)
     if nest_level == 1:
         diff_message = f'{{\n{diff_message}}}'
+        # print(diff_message)
+        # with open('temp_diff.txt', 'w') as f:
+        #     f.write(diff_message)
+        # print(1)
     return diff_message

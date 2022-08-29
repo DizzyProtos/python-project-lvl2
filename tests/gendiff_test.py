@@ -3,16 +3,16 @@ from gendiff import generate_diff
 
 
 def run_test(test_file1, test_file2, correct_file, format='json'):
-    diff = generate_diff(test_file1, test_file2, format)
-    with open('temp_difference.txt', 'w') as f:
-        f.write(diff)
+    answer = generate_diff(test_file1, test_file2, format)
+    # with open('temp_difference.txt', 'w') as f:
+    #     f.write(diff)
 
-    with open('temp_difference.txt', 'r') as f:
-        answer = f.read()
+    # with open('temp_difference.txt', 'r') as f:
+    #     answer = f.read()
     with open(correct_file, 'r') as f:
         correct_answer = f.read()
     assert answer == correct_answer
-    os.remove('temp_difference.txt')
+    # os.remove('temp_difference.txt')
 
 
 def test_gendiff_json():
