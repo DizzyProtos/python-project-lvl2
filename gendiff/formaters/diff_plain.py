@@ -1,6 +1,5 @@
 """Format differences into a plain message."""
 
-
 def _format_value(line_value):
     """Format value of a line in plain message.
 
@@ -18,6 +17,10 @@ def _format_value(line_value):
         return (_format_value(fv), _format_value(sv))
     if isinstance(line_value, dict):
         return complex_value_str
+    if isinstance(line_value, bool):
+        return 'true' if line_value else 'false'
+    if line_value is None:
+        return 'null'
     return line_value
 
 
