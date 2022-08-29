@@ -4,7 +4,7 @@ def _get_indent(level):
     return ' ' * (level * 4 - 2)
 
 
-def _format_json_diff_value(json_diff_value):
+def _format_pretty_diff_value(json_diff_value):
     if isinstance(json_diff_value, bool):
         return 'true' if json_diff_value else 'false'
     if json_diff_value is None:
@@ -12,7 +12,7 @@ def _format_json_diff_value(json_diff_value):
     return str(json_diff_value)
 
 
-def _dict_to_json_lines(initial_key, input_dict, symb='', nest_level=1):
+def _dict_to_pretty_lines(initial_key, input_dict, symb='', nest_level=1):
     """Convert dictionary into lines for diffence message.
 
     Args:
@@ -27,16 +27,16 @@ def _dict_to_json_lines(initial_key, input_dict, symb='', nest_level=1):
     lines = [f'{_get_indent(nest_level)}{symb} {initial_key}: {{']
     for key, key_item in input_dict.items():
         if isinstance(input_dict[key], dict):
-            lines += _dict_to_json_lines(key, key_item, ' ', nest_level + 1)
+            lines += _dict_to_pretty_lines(key, key_item, ' ', nest_level + 1)
         else:
-            key_item = _format_json_diff_value(key_item)
+            key_item = _format_pretty_diff_value(key_item)
             indent = _get_indent(nest_level + 1)
             lines.append('{0}  {1}: {2}'.format(indent, key, key_item))
     lines.append(f'{_get_indent(nest_level)}  }}')
     return lines
 
 
-def _format_diff_json_line(symb, key, line_val, nest_level):
+def _format_diff_pretty_line(symb, key, line_val, nest_level):
     """Format line of json message.
 
     Args:
@@ -51,13 +51,13 @@ def _format_diff_json_line(symb, key, line_val, nest_level):
     if not symb:
         symb = ' '
     if isinstance(line_val, dict):
-        return _dict_to_json_lines(key, line_val, symb, nest_level)
+        return _dict_to_pretty_lines(key, line_val, symb, nest_level)
     indent = _get_indent(nest_level)
-    line_val = _format_json_diff_value(line_val)
+    line_val = _format_pretty_diff_value(line_val)
     return [f'{indent}{symb} {key}: {line_val}']
 
 
-def _get_json_line(line_tuple, nest_level=1):
+def _get_pretty_line(line_tuple, nest_level=1):
     """Get json message line from difference line.
 
     Args:
@@ -69,20 +69,20 @@ def _get_json_line(line_tuple, nest_level=1):
     """
     symb, key, line_value = line_tuple
     if symb == 'u':
-        lines = _format_diff_json_line('-', key, line_value[0], nest_level)
-        lines += _format_diff_json_line('+', key, line_value[1], nest_level)
+        lines = _format_diff_pretty_line('-', key, line_value[0], nest_level)
+        lines += _format_diff_pretty_line('+', key, line_value[1], nest_level)
     elif symb == 'e':
-        lines = _format_diff_json_line('', key, line_value, nest_level)
+        lines = _format_diff_pretty_line('', key, line_value, nest_level)
     elif symb == 'a':
-        lines = _format_diff_json_line('+', key, line_value, nest_level)
+        lines = _format_diff_pretty_line('+', key, line_value, nest_level)
     elif symb == 's':
-        lines = _format_diff_json_line('-', key, line_value, nest_level)
+        lines = _format_diff_pretty_line('-', key, line_value, nest_level)
     else:
         lines = []
     return lines
 
 
-def format_json(diff_lines, nest_level=1):
+def format_pretty(diff_lines, nest_level=1):
     """Create json difference message from lines.
 
     Args:
@@ -99,11 +99,11 @@ def format_json(diff_lines, nest_level=1):
         if isinstance(diff_lines[line_ind], str):
             diff_message.append(f'{indent}  {diff_lines[line_ind]}: {{\n')
             n_value = diff_lines[line_ind + 1]
-            diff_message.append(format_json(n_value, nest_level + 1))
+            diff_message.append(format_pretty(n_value, nest_level + 1))
             diff_message.append(f'{indent}  }}\n')
             line_ind += 2
         elif isinstance(diff_lines[line_ind], tuple):
-            formated_lines = _get_json_line(diff_lines[line_ind], nest_level)
+            formated_lines = _get_pretty_line(diff_lines[line_ind], nest_level)
             diff_message.append(''.join([f'{ln}\n' for ln in formated_lines]))
             line_ind += 1
     diff_message = ''.join(diff_message)
