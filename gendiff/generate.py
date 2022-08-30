@@ -5,7 +5,7 @@ from gendiff.format_difference import format_diff_message
 from gendiff.search_difference import get_diff_lines
 
 
-def generate_diff(file_path1, file_path2, format_name='json'):
+def generate_diff(file_path1, file_path2, format_name='pretty'):
     """Get difference between two files.
 
     Args:
