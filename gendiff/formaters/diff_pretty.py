@@ -13,20 +13,20 @@ def _get_indent(level):
     return ' ' * (level * 4 - 2)
 
 
-def _format_pretty_diff_value(json_diff_value):
+def _format_pretty_diff_value(pretty_diff_value):
     """Format value in line.
 
     Args:
-        json_diff_value (any): value to format
+        pretty_diff_value (any): value to format
 
     Returns:
         str: formated value
     """
-    if isinstance(json_diff_value, bool):
-        return 'true' if json_diff_value else 'false'
-    if json_diff_value is None:
+    if isinstance(pretty_diff_value, bool):
+        return 'true' if pretty_diff_value else 'false'
+    if pretty_diff_value is None:
         return 'null'
-    return str(json_diff_value)
+    return str(pretty_diff_value)
 
 
 def _dict_to_pretty_lines(initial_key, input_dict, symb='', nest_level=1):
@@ -63,7 +63,7 @@ def _format_diff_pretty_line(symb, key, line_val, nest_level):
         nest_level (int): level of nesting for this line
 
     Returns:
-        List[str]: lines of json message
+        List[str]: lines of pretty message
     """
     if not symb:
         symb = ' '
@@ -82,7 +82,7 @@ def _get_pretty_line(line_tuple, nest_level=1):
         nest_level (int, optional): how many nested dicts are parents.
 
     Returns:
-        List[str]: line of json message
+        List[str]: line of pretty message
     """
     symb, key, line_value = line_tuple
     if symb == 'u':
