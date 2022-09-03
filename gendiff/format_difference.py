@@ -4,6 +4,21 @@ from gendiff.formaters.diff_json import format_json
 from gendiff.formaters.diff_plain import format_plain
 
 
+_formaters = {'plain': format_plain, 'json': format_json, 'pretty': format_pretty}
+
+
+def is_format_exists(format_name):
+    """Check if format is implemented.
+
+    Args:
+        format_name (str): name of the format
+
+    Returns:
+        bool: True if format is implemented, False otherwise
+    """
+    return format_name in _formaters
+
+
 def format_diff_message(diff_lines, format_name):
     """Format diff_lines into a message of determined format.
 
@@ -14,9 +29,4 @@ def format_diff_message(diff_lines, format_name):
     Returns:
         str: formated difference message
     """
-    if format_name == 'plain':
-        return format_plain(diff_lines)
-    if format_name == 'json':
-        return format_json(diff_lines)
-    else:
-        return format_pretty(diff_lines)
+    return _formaters[format_name](diff_lines)
