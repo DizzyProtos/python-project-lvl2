@@ -6,13 +6,8 @@ from gendiff import generate_diff
 DESCRIPTION = 'Compares two configuration files and shows a difference.'
 
 
-def main(*args, **kwargs):
+def main():
     """Get difference between two files.
-
-    Args:
-        *args (list): arguments
-        **kwargs (dict): named arguments
-
     Returns:
         str: description of files differences
     """
@@ -29,4 +24,4 @@ def main(*args, **kwargs):
 
 
 if __name__ == '__main__':
-    main('tests/fixtures/1.json', 'tests/fixtures/2.json', format='json')
+    main()
