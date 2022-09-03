@@ -13,9 +13,6 @@ def _format_value(line_value):
     complex_value_str = '[complex value]'
     if isinstance(line_value, str):
         return f"'{line_value}'"
-    if isinstance(line_value, tuple):
-        fv, sv = line_value
-        return (_format_value(fv), _format_value(sv))
     if isinstance(line_value, dict):
         return complex_value_str
     if isinstance(line_value, bool):
@@ -23,6 +20,26 @@ def _format_value(line_value):
     if line_value is None:
         return 'null'
     return line_value
+
+
+def _unpack_diff_line(line_tuple, parent_keys=None):
+    """Unpack line tuple and format value
+
+    Args:
+        line_tuple (tuple): difference line.
+        parent_keys (list, optional): keys if current line is from nested dict.
+
+    Returns:
+        tuple: formated
+    """
+    symb, key, line_value = line_tuple
+    key = '.'.join([*parent_keys, key])
+    if isinstance(line_value, tuple):
+        fv, sv = line_value
+        line_value = (_format_value(fv), _format_value(sv))
+    else:
+        line_value = _format_value(line_value)
+    return symb, key, line_value
 
 
 def get_plain_line(line_tuple, parent_keys=None):
@@ -35,12 +52,7 @@ def get_plain_line(line_tuple, parent_keys=None):
     Returns:
         str: line of the plain message
     """
-    symb, key, line_value = line_tuple
-    key = '.'.join([*parent_keys, key])
-    line_value = _format_value(line_value)
-
-    if parent_keys is None:
-        parent_keys = []
+    symb, key, line_value = _unpack_diff_line(line_tuple, parent_keys)
 
     if symb == 'u':
         from_part = f'From {line_value[0]} to {line_value[1]}'
