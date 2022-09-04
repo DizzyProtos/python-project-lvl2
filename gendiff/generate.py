@@ -1,7 +1,7 @@
 """Main module."""
 
 from gendiff.file_reader import read_file
-from gendiff.format_difference import format_diff_message, is_format_exists
+from gendiff.formaters.format_difference import format_message, is_format_valid
 from gendiff.search_difference import get_diff
 
 
@@ -16,11 +16,11 @@ def generate_diff(file_path1, file_path2, format_name='pretty'):
     Returns:
         str: description of changes in the first file
     """
-    if not is_format_exists(format_name):
+    if not is_format_valid(format_name):
         return f'Format name {format_name} is not found'
 
     first_dict = read_file(file_path1)
     second_dict = read_file(file_path2)
 
     diff_lines = get_diff(first_dict, second_dict)
-    return format_diff_message(diff_lines, format_name)
+    return format_message(diff_lines, format_name)

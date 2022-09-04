@@ -9,7 +9,7 @@ _formaters = {'plain': format_plain,
               'pretty': format_pretty}
 
 
-def is_format_exists(format_name):
+def is_format_valid(format_name):
     """Check if format is implemented.
 
     Args:
@@ -21,7 +21,7 @@ def is_format_exists(format_name):
     return format_name in _formaters
 
 
-def format_diff_message(diff_lines, format_name):
+def format_message(diff_lines, format_name):
     """Format diff_lines into a message of determined format.
 
     Args:
