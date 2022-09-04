@@ -6,7 +6,7 @@ from gendiff.formaters.diff_plain import format_plain
 
 _formaters = {'plain': format_plain,
               'json': format_json,
-              'pretty': format_pretty}
+              'stylish': format_pretty}
 
 
 def is_format_valid(format_name):
