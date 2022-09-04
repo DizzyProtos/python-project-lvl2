@@ -5,7 +5,7 @@ from gendiff.formaters.format_difference import format_message, is_format_valid
 from gendiff.search_difference import get_diff
 
 
-def generate_diff(file_path1, file_path2, format_name='pretty'):
+def generate_diff(file_path1, file_path2, format_name='stylish'):
     """Get difference between two files.
 
     Args:
