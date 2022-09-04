@@ -16,6 +16,8 @@ def generate_diff(file_path1, file_path2, format_name='stylish'):
     Returns:
         str: description of changes in the first file
     """
+    if not format_name:
+        format_name = 'stylish'
     if not is_format_valid(format_name):
         return f'Format name {format_name} is not found'
 
