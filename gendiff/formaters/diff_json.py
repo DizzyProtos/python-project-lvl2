@@ -1,6 +1,8 @@
 """Create json difference message."""
-
 import json
+
+
+from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
 
 
 def _format_diff_json_child(type, key, line_val):
@@ -32,13 +34,13 @@ def _get_json_child(line_tuple):
     """
     symb, key, line_value = line_tuple
     type_verb = ''
-    if symb == 'u':
+    if symb == UPDATE:
         type_verb = 'changed'
-    if symb == 'e':
+    if symb == SAME:
         type_verb = 'unchanged'
-    if symb == 'a':
+    if symb == ADD:
         type_verb = 'added'
-    if symb == 's':
+    if symb == REMOVE:
         type_verb = 'deleted'
     return _format_diff_json_child(type_verb, key, line_value)
 

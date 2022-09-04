@@ -1,4 +1,5 @@
 """Format differences into a plain message."""
+from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
 
 
 def _format_value(line_value):
@@ -54,14 +55,14 @@ def get_plain_line(line_tuple, parent_keys=None):
     """
     symb, key, line_value = _unpack_diff_line(line_tuple, parent_keys)
 
-    if symb == 'u':
+    if symb == UPDATE:
         from_part = f'From {line_value[0]} to {line_value[1]}'
         return f"Property '{key}' was updated. {from_part}"
-    if symb == 'e':
+    if symb == SAME:
         return ''
-    if symb == 'a':
+    if symb == ADD:
         return f"Property '{key}' was added with value: {line_value}"
-    if symb == 's':
+    if symb == REMOVE:
         return f"Property '{key}' was removed"
     return ''
 

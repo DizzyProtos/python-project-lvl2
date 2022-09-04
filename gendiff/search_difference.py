@@ -1,7 +1,8 @@
 """Functions to get difference messages between two files."""
+from difference_description import ADD, REMOVE, UPDATE, SAME
 
 
-def get_alphabetical_keys(first_dict, second_dict):
+def _get_alphabetical_keys(first_dict, second_dict):
     """Get keys from both dictionaries in alphabetical order.
 
     Args:
@@ -14,7 +15,7 @@ def get_alphabetical_keys(first_dict, second_dict):
     return sorted(set(list(first_dict) + list(second_dict)))
 
 
-def get_diff_at_key(key, first_dict, second_dict):
+def _get_diff_at_key(key, first_dict, second_dict):
     """Get difference line at a key.
 
     Args:
@@ -30,18 +31,18 @@ def get_diff_at_key(key, first_dict, second_dict):
     if isinstance(first_value, dict) and isinstance(second_value, dict):
         line = ()
     if key not in first_dict:  # added
-        line = ('a', key, second_value)
+        line = (ADD, key, second_value)
     elif key not in second_dict:  # removed
-        line = ('s', key, first_value)
+        line = (REMOVE, key, first_value)
     elif first_value == second_value:  # equal
-        line = ('e', key, first_value)
+        line = (SAME, key, first_value)
     elif first_value != second_value:  # changed
-        line = ('u', key, (first_value, second_value))
+        line = (UPDATE, key, (first_value, second_value))
 
     return (line)
 
 
-def get_diff_lines(first_dict, second_dict):
+def get_diff(first_dict, second_dict):
     """Return difference between first and second dicts on key.
 
     Args:
@@ -52,12 +53,12 @@ def get_diff_lines(first_dict, second_dict):
         list: lines with differences
     """
     diff_lines = []
-    for key in get_alphabetical_keys(first_dict, second_dict):
+    for key in _get_alphabetical_keys(first_dict, second_dict):
         first_value = first_dict.get(key, None)
         second_value = second_dict.get(key, None)
         if isinstance(first_value, dict) and isinstance(second_value, dict):
             diff_lines.append(key)
-            diff_lines.append(get_diff_lines(first_value, second_value))
+            diff_lines.append(get_diff(first_value, second_value))
         else:
-            diff_lines.append(get_diff_at_key(key, first_dict, second_dict))
+            diff_lines.append(_get_diff_at_key(key, first_dict, second_dict))
     return diff_lines

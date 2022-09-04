@@ -1,4 +1,5 @@
 """Create human readable difference message."""
+from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
 
 
 def _get_indent(level):
@@ -85,14 +86,14 @@ def _get_pretty_line(line_tuple, nest_level=1):
         List[str]: line of pretty message
     """
     symb, key, line_value = line_tuple
-    if symb == 'u':
+    if symb == UPDATE:
         lines = _format_diff_pretty_line('-', key, line_value[0], nest_level)
         lines += _format_diff_pretty_line('+', key, line_value[1], nest_level)
-    elif symb == 'e':
+    elif symb == SAME:
         lines = _format_diff_pretty_line('', key, line_value, nest_level)
-    elif symb == 'a':
+    elif symb == ADD:
         lines = _format_diff_pretty_line('+', key, line_value, nest_level)
-    elif symb == 's':
+    elif symb == REMOVE:
         lines = _format_diff_pretty_line('-', key, line_value, nest_level)
     else:
         lines = []
