@@ -39,11 +39,11 @@ def _get_diff_at_key(key, first_dict, second_dict):
     elif first_value != second_value:  # changed
         line = (UPDATE, key, (first_value, second_value))
 
-    return (line)
+    return line
 
 
 def get_diff(first_dict, second_dict):
-    """Return difference between first and second dicts on key.
+    """Return difference between first and second dicts for a key.
 
     Args:
         first_dict (dict): original dictionary

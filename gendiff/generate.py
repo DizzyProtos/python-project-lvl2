@@ -1,4 +1,4 @@
-"""Main module."""
+"""Get difference message for two files."""
 
 from gendiff.file_reader import read_file
 from gendiff.formaters.format_difference import format_message, is_format_valid

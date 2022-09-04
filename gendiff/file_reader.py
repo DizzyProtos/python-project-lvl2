@@ -30,7 +30,7 @@ def _parse_json(file_handler):
 
 
 def _parse_yaml(file_handler):
-    """Parses YAML file and return dictionary.
+    """Parses YAML file and returns dictionary.
 
     Args:
         file_handler (file): file to parse

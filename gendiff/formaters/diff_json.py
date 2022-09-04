@@ -27,9 +27,9 @@ def _get_json_child(symb, key, line_value):
     """Get difference dict for a single line.
 
     Args:
-        diff_type (str): type of change in line
+        diff_type (str): type of change in a line
         key (str): changed key
-        line_value (str): value of change, one or (before, after)
+        line_value (str): value of change, one value or (before, after)
 
     Returns:
         dict: difference as a dictionary

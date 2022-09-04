@@ -58,7 +58,7 @@ def _format_diff_pretty_line(symb, key, line_val, nest_level):
     """Format line of the difference message.
 
     Args:
-        symb (str): + or - symbol for this line
+        symb (str): symbol to place before key for this line
         key (any): key in the line
         line_val (any): value of the line
         nest_level (int): level of nesting for this line
@@ -102,7 +102,7 @@ def _get_pretty_line(diff_type, key, line_value, nest_level=1):
 
 
 def format_pretty(diff_lines, nest_level=1):
-    """Create the difference message from lines.
+    """Create a difference message from lines.
 
     Args:
         diff_lines (list): lines describing differences between two files
