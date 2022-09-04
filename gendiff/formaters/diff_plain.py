@@ -1,5 +1,5 @@
 """Format differences into a plain message."""
-from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
+from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _format_value(line_value):
@@ -23,46 +23,46 @@ def _format_value(line_value):
     return line_value
 
 
-def _unpack_diff_line(line_tuple, parent_keys=None):
-    """Unpack line tuple and format value
+def _format_diff_value(line_value):
+    """Unpack line values and format each value
 
     Args:
-        line_tuple (tuple): difference line.
-        parent_keys (list, optional): keys if current line is from nested dict.
+        line_value (tuple): value from difference line.
 
     Returns:
-        tuple: formated
+        tuple: formated difference values
     """
-    symb, key, line_value = line_tuple
-    key = '.'.join([*parent_keys, key])
     if isinstance(line_value, tuple):
         fv, sv = line_value
         line_value = (_format_value(fv), _format_value(sv))
     else:
         line_value = _format_value(line_value)
-    return symb, key, line_value
+    return line_value
 
 
-def get_plain_line(line_tuple, parent_keys=None):
+def get_plain_line(diff_type, key, line_value, parent_keys=None):
     """Format one difference line into line of plain message.
 
     Args:
-        line_tuple (tuple): difference line (symbol, key, value)
+        diff_type (str): type of change in line
+        key (str): changed key
+        line_value (str): value of change, one or (before, after)
         parent_keys (list, optional): keys if current line is from nested dict.
 
     Returns:
         str: line of the plain message
     """
-    symb, key, line_value = _unpack_diff_line(line_tuple, parent_keys)
+    line_value = _format_diff_value(line_value)
+    key = '.'.join([*parent_keys, key])
 
-    if symb == UPDATE:
+    if diff_type == UPDATE:
         from_part = f'From {line_value[0]} to {line_value[1]}'
         return f"Property '{key}' was updated. {from_part}"
-    if symb == SAME:
+    if diff_type == SAME:
         return ''
-    if symb == ADD:
+    if diff_type == ADD:
         return f"Property '{key}' was added with value: {line_value}"
-    if symb == REMOVE:
+    if diff_type == REMOVE:
         return f"Property '{key}' was removed"
     return ''
 
@@ -81,17 +81,13 @@ def format_plain(diff_lines, parent_keys=None):
         parent_keys = []
 
     diff_message = ''
-    li = 0
-    while li < len(diff_lines):
-        if isinstance(diff_lines[li], str):
-            nl = diff_lines[li + 1]
-            diff_message += format_plain(nl, [*parent_keys, diff_lines[li]])
-            li += 2
+    for diff_type, key, diff_val in diff_lines:
+        if diff_type == NESTED:
+            diff_message += format_plain(diff_val, [*parent_keys, key])
         else:
-            new_line = get_plain_line(diff_lines[li], parent_keys)
+            new_line = get_plain_line(diff_type, key, diff_val, parent_keys)
             if new_line:
                 diff_message = f'{diff_message}{new_line}\n'
-            li += 1
     if not parent_keys:
         diff_message = diff_message[:-1]
     return diff_message

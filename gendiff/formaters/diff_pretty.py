@@ -1,5 +1,5 @@
 """Create human readable difference message."""
-from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
+from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _get_indent(level):
@@ -75,25 +75,26 @@ def _format_diff_pretty_line(symb, key, line_val, nest_level):
     return [f'{indent}{symb} {key}: {line_val}']
 
 
-def _get_pretty_line(line_tuple, nest_level=1):
+def _get_pretty_line(diff_type, key, line_value, nest_level=1):
     """Get the diffenrence message line from an internal line.
 
     Args:
-        line_tuple (tuple): difference line (symbol, key, value)
+        diff_type (str): type of change in line
+        key (str): changed key
+        line_value (str): value of change, one or (before, after)
         nest_level (int, optional): how many nested dicts are parents.
 
     Returns:
         List[str]: line of pretty message
     """
-    symb, key, line_value = line_tuple
-    if symb == UPDATE:
+    if diff_type == UPDATE:
         lines = _format_diff_pretty_line('-', key, line_value[0], nest_level)
         lines += _format_diff_pretty_line('+', key, line_value[1], nest_level)
-    elif symb == SAME:
+    elif diff_type == SAME:
         lines = _format_diff_pretty_line('', key, line_value, nest_level)
-    elif symb == ADD:
+    elif diff_type == ADD:
         lines = _format_diff_pretty_line('+', key, line_value, nest_level)
-    elif symb == REMOVE:
+    elif diff_type == REMOVE:
         lines = _format_diff_pretty_line('-', key, line_value, nest_level)
     else:
         lines = []
@@ -112,18 +113,14 @@ def format_pretty(diff_lines, nest_level=1):
     """
     indent = _get_indent(nest_level)
     diff_message = []
-    line_ind = 0
-    while line_ind < len(diff_lines):
-        if isinstance(diff_lines[line_ind], str):
-            diff_message.append(f'{indent}  {diff_lines[line_ind]}: {{\n')
-            n_value = diff_lines[line_ind + 1]
-            diff_message.append(format_pretty(n_value, nest_level + 1))
+    for diff_type, key, diff_val in diff_lines:
+        if diff_type == NESTED:
+            diff_message.append(f'{indent}  {key}: {{\n')
+            diff_message.append(format_pretty(diff_val, nest_level + 1))
             diff_message.append(f'{indent}  }}\n')
-            line_ind += 2
-        elif isinstance(diff_lines[line_ind], tuple):
-            formated_lines = _get_pretty_line(diff_lines[line_ind], nest_level)
-            diff_message.append(''.join([f'{ln}\n' for ln in formated_lines]))
-            line_ind += 1
+        else:
+            formated = _get_pretty_line(diff_type, key, diff_val, nest_level)
+            diff_message.append(''.join([f'{ln}\n' for ln in formated]))
     diff_message = ''.join(diff_message)
     if nest_level == 1:
         diff_message = f'{{\n{diff_message}}}'

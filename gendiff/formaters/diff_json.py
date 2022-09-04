@@ -2,7 +2,7 @@
 import json
 
 
-from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME
+from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _format_diff_json_child(type, key, line_val):
@@ -23,16 +23,17 @@ def _format_diff_json_child(type, key, line_val):
     return {'key': key, 'type': type, **value_dict}
 
 
-def _get_json_child(line_tuple):
+def _get_json_child(symb, key, line_value):
     """Get difference dict for a single line.
 
     Args:
-        line_tuple (tuple): difference line (symbol, key, value)
+        diff_type (str): type of change in line
+        key (str): changed key
+        line_value (str): value of change, one or (before, after)
 
     Returns:
         dict: difference as a dictionary
     """
-    symb, key, line_value = line_tuple
     type_verb = ''
     if symb == UPDATE:
         type_verb = 'changed'
@@ -57,17 +58,12 @@ def _get_json_diff_dict(diff_lines, key_type='root', initial_key=''):
         dict: difference message as a dictionary
     """
     children = []
-    line_ind = 0
-    while line_ind < len(diff_lines):
-        line_val = diff_lines[line_ind]
-        if isinstance(diff_lines[line_ind], str):
-            nested_val = diff_lines[line_ind + 1]
+    for diff_type, key, diff_val in diff_lines:
+        if diff_type == NESTED:
             ktype = 'nested'
-            children.append(_get_json_diff_dict(nested_val, ktype, line_val))
-            line_ind += 2
+            children.append(_get_json_diff_dict(diff_val, ktype, key))
         else:
-            children.append(_get_json_child(line_val))
-            line_ind += 1
+            children.append(_get_json_child(diff_type, key, diff_val))
     return {'key': initial_key, 'type': key_type, 'children': children}
 
 

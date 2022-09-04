@@ -1,5 +1,5 @@
 """Functions to get difference messages between two files."""
-from difference_description import ADD, REMOVE, UPDATE, SAME
+from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME, NESTED
 
 
 def _get_alphabetical_keys(first_dict, second_dict):
@@ -57,8 +57,8 @@ def get_diff(first_dict, second_dict):
         first_value = first_dict.get(key, None)
         second_value = second_dict.get(key, None)
         if isinstance(first_value, dict) and isinstance(second_value, dict):
-            diff_lines.append(key)
-            diff_lines.append(get_diff(first_value, second_value))
+            nested_diff = get_diff(first_value, second_value)
+            diff_lines.append((NESTED, key, nested_diff))
         else:
             diff_lines.append(_get_diff_at_key(key, first_dict, second_dict))
     return diff_lines
