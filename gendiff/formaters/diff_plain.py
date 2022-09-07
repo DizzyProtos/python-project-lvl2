@@ -23,16 +23,17 @@ def _format_value(line_value):
     return line_value
 
 
-def _format_diff_value(line_value):
+def _format_diff_value(diff_type, line_value):
     """Unpack line values and format each value
 
     Args:
-        line_value (tuple): value from difference line.
+        diff_type (str): type of change for this value
+        line_value (any): value from difference line.
 
     Returns:
         tuple: formated difference values
     """
-    if isinstance(line_value, tuple):
+    if diff_type == UPDATE:
         fv, sv = line_value
         line_value = (_format_value(fv), _format_value(sv))
     else:
@@ -52,7 +53,7 @@ def get_plain_line(diff_type, key, line_value, parent_keys=None):
     Returns:
         str: line of the plain message
     """
-    line_value = _format_diff_value(line_value)
+    line_value = _format_diff_value(diff_type, line_value)
     key = '.'.join([*parent_keys, key])
 
     if diff_type == UPDATE:
