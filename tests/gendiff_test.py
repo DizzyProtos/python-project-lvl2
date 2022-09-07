@@ -1,4 +1,3 @@
-import json
 import pytest
 from gendiff import generate_diff
 
@@ -28,5 +27,5 @@ def test_gendiff(test_files, test_formats):
     test_file1, test_file2 = test_files
     message_format, correct_file = test_formats
     with open(correct_file, 'r') as f:
-        correct_answer = f.read()
-    assert generate_diff(test_file1, test_file2, message_format) == correct_answer
+        correct = f.read()
+    assert generate_diff(test_file1, test_file2, message_format) == correct
