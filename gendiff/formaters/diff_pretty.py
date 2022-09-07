@@ -1,5 +1,5 @@
 """Create human readable difference message."""
-from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
+from gendiff.search_difference import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _get_indent(level):

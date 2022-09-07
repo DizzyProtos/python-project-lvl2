@@ -1,5 +1,9 @@
 """Functions to get difference messages between two files."""
-from gendiff.difference_description import ADD, REMOVE, UPDATE, SAME, NESTED
+ADD = 'added'
+REMOVE = 'removed'
+UPDATE = 'changed'
+SAME = 'equals'
+NESTED = 'nested'
 
 
 def _get_alphabetical_keys(first_dict, second_dict):

@@ -2,7 +2,7 @@
 import json
 
 
-from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
+from gendiff.search_difference import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _format_diff_json_child(type, key, line_val):

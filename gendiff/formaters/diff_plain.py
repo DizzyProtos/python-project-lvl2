@@ -1,5 +1,5 @@
 """Format differences into a plain message."""
-from gendiff.difference_description import ADD, NESTED, REMOVE, UPDATE, SAME
+from gendiff.search_difference import ADD, NESTED, REMOVE, UPDATE, SAME
 
 
 def _format_value(line_value):
