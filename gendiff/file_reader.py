@@ -41,7 +41,7 @@ def _parse_yaml(file_handler):
     return yaml.safe_load(file_handler)
 
 
-_FILE_READERS = {'yaml': _parse_yaml, 'yml': _parse_yaml, 
+_FILE_READERS = {'yaml': _parse_yaml, 'yml': _parse_yaml,
                  'json': _parse_json, 'default': _parse_json}
 
 
