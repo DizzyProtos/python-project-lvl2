@@ -1,58 +1,32 @@
 import json
+import pytest
 from gendiff import generate_diff
 
 
-def run_test(test_file1, test_file2, correct_file, format='stylish'):
+TEST_FILES = {
+    'json': ['tests/fixtures/1.json', 'tests/fixtures/2.json'],
+    'yaml': ['tests/fixtures/1.yaml', 'tests/fixtures/2.yaml']
+}
+
+
+TEST_FORMATS = {'stylish': 'tests/fixtures/correct.txt',
+                'plain': 'tests/fixtures/correct_plain.txt',
+                'json': 'tests/fixtures/correct_json.txt'}
+
+
+@pytest.fixture(params=TEST_FILES)
+def test_files(request):
+    return TEST_FILES[request.param]
+
+
+@pytest.fixture(params=TEST_FORMATS)
+def test_formats(request):
+    return request.param, TEST_FORMATS[request.param]
+
+
+def test_gendiff(test_files, test_formats):
+    test_file1, test_file2 = test_files
+    message_format, correct_file = test_formats
     with open(correct_file, 'r') as f:
         correct_answer = f.read()
-    assert generate_diff(test_file1, test_file2, format) == correct_answer
-
-
-def test_gendiff_json():
-    test_file1 = 'tests/fixtures/1.json'
-    test_file2 = 'tests/fixtures/2.json'
-    correct_file = 'tests/fixtures/correct.txt'
-    run_test(test_file1, test_file2, correct_file, 'stylish')
-
-
-def test_gendiff_yaml():
-    test_file1 = 'tests/fixtures/1.yaml'
-    test_file2 = 'tests/fixtures/2.yaml'
-    correct_file = 'tests/fixtures/correct.txt'
-    run_test(test_file1, test_file2, correct_file, 'stylish')
-
-
-def test_gendiff_json_plain():
-    test_file1 = 'tests/fixtures/1.json'
-    test_file2 = 'tests/fixtures/2.json'
-    correct_file = 'tests/fixtures/correct_plain.txt'
-    run_test(test_file1, test_file2, correct_file, 'plain')
-
-
-def test_gendiff_yaml_plain():
-    test_file1 = 'tests/fixtures/1.yaml'
-    test_file2 = 'tests/fixtures/2.yaml'
-    correct_file = 'tests/fixtures/correct_plain.txt'
-    run_test(test_file1, test_file2, correct_file, 'plain')
-
-
-def run_json_test(test_file1, test_file2, correct_file):
-    answer = generate_diff(test_file1, test_file2, 'json')
-    answer = json.loads(answer)
-    with open(correct_file, 'r') as f:
-        correct_answer = json.load(f)
-    assert answer == correct_answer
-
-
-def test_gendiff_json_json():
-    test_file1 = 'tests/fixtures/1.json'
-    test_file2 = 'tests/fixtures/2.json'
-    correct_file = 'tests/fixtures/correct_json.txt'
-    run_json_test(test_file1, test_file2, correct_file)
-
-
-def test_gendiff_yaml_json():
-    test_file1 = 'tests/fixtures/1.yaml'
-    test_file2 = 'tests/fixtures/2.yaml'
-    correct_file = 'tests/fixtures/correct_json.txt'
-    run_json_test(test_file1, test_file2, correct_file)
+    assert generate_diff(test_file1, test_file2, message_format) == correct_answer
