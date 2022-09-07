@@ -109,12 +109,12 @@
       "key": "group3",
       "type": "added",
       "value": {
-        "fee": 100500,
         "deep": {
           "id": {
             "number": 45
           }
-        }
+        },
+        "fee": 100500
       }
     },
     {
