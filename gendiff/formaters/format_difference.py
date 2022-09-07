@@ -4,7 +4,7 @@ from gendiff.formaters.diff_json import format_json
 from gendiff.formaters.diff_plain import format_plain
 
 
-_formaters = {'plain': format_plain,
+_FORMATERS = {'plain': format_plain,
               'json': format_json,
               'stylish': format_pretty}
 
@@ -18,7 +18,7 @@ def is_format_valid(format_name):
     Returns:
         bool: True if format is implemented, False otherwise
     """
-    return format_name in _formaters
+    return format_name in _FORMATERS
 
 
 def format_message(diff_lines, format_name):
@@ -31,4 +31,4 @@ def format_message(diff_lines, format_name):
     Returns:
         str: formated difference message
     """
-    return _formaters[format_name](diff_lines)
+    return _FORMATERS[format_name](diff_lines)
