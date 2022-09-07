@@ -41,6 +41,10 @@ def _parse_yaml(file_handler):
     return yaml.safe_load(file_handler)
 
 
+_FILE_READERS = {'yaml': _parse_yaml, 'yml': _parse_yaml, 
+                 'json': _parse_json, 'default': _parse_json}
+
+
 def read_file(file_path):
     """Read file and return its content as a dict.
 
@@ -51,7 +55,7 @@ def read_file(file_path):
         dict: file content as dictionary
     """
     format = _get_file_format(file_path)
+    if format not in _FILE_READERS:
+        format = 'default'
     with open(file_path, 'r') as inp_f:
-        if format in {'yaml', 'yml'}:
-            return _parse_yaml(inp_f)
-        return _parse_json(inp_f)
+        return _FILE_READERS[format](inp_f)
